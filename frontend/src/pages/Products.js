@@ -89,7 +89,6 @@ function Products() {
       fetchProducts();
     }, 300);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
   // Filter products

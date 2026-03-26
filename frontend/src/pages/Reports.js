@@ -192,7 +192,6 @@ function Reports() {
     } else if (activeReport === 'performance') {
       fetchProductPerformanceReport();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeReport, selectedDate, selectedMonth]);
 
   return (
