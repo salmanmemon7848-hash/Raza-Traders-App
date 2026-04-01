@@ -8,8 +8,12 @@ import {
   DollarSign, 
   TrendingUp, 
   AlertCircle,
+  AlertTriangle,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Trash2,
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,6 +33,10 @@ interface DashboardStats {
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState(false);
 
   useEffect(() => {
     fetch('/api/dashboard')
@@ -49,6 +57,43 @@ export default function Dashboard() {
       });
   }, []);
 
+  const handleReset = async () => {
+    setResetting(true);
+    setResetError(null);
+    
+    try {
+      const res = await fetch('/api/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmReset: true }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to reset data');
+      }
+
+      setResetSuccess(true);
+      
+      // Refresh dashboard data
+      setTimeout(async () => {
+        const dashboardRes = await fetch('/api/dashboard');
+        const dashboardData = await dashboardRes.json();
+        if (dashboardData && typeof dashboardData === 'object') {
+          setStats(dashboardData);
+        }
+        setShowResetModal(false);
+        setResetSuccess(false);
+        setResetting(false);
+      }, 1500);
+    } catch (err: any) {
+      console.error(err);
+      setResetError(err.message || 'Failed to reset data. Please try again.');
+      setResetting(false);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-full">Loading...</div>;
   if (!stats) return <div>Error loading dashboard</div>;
 
@@ -62,9 +107,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800">Welcome to Raza Traders</h2>
-        <p className="text-gray-500">Here's what's happening today</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Welcome to Raza Traders</h2>
+          <p className="text-gray-500">Here's what's happening today</p>
+        </div>
+        <button
+          onClick={() => setShowResetModal(true)}
+          className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Reset Data
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -163,6 +217,87 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">Reset All Data</h3>
+                <p className="text-sm text-gray-500">This action cannot be undone</p>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Error Message */}
+              {resetError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span>{resetError}</span>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {resetSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                  <span>All data has been reset successfully!</span>
+                </div>
+              )}
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm font-semibold text-yellow-800 mb-2">This will delete:</p>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• All products and inventory</li>
+                  <li>• All bills and sales records</li>
+                  <li>• All customer information</li>
+                </ul>
+              </div>
+
+              <p className="text-sm text-gray-600">
+                Are you sure you want to continue? This will permanently erase all your data.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetModal(false);
+                    setResetError(null);
+                    setResetSuccess(false);
+                  }}
+                  disabled={resetting}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={resetting}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {resetting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Yes, Reset Everything
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

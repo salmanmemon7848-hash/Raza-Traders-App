@@ -41,16 +41,29 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    
+    // Validate required fields
+    if (!body.name || !body.name.trim()) {
+      return NextResponse.json(
+        { error: 'Missing required fields', details: 'Customer name is required' },
+        { status: 400 }
+      );
+    }
+
     const customer = await prisma.customer.create({
       data: {
-        name: body.name,
-        phone: body.phone || null,
-        address: body.address || null,
+        name: body.name.trim(),
+        phone: body.phone?.trim() || null,
+        address: body.address?.trim() || null,
       },
     });
-    return NextResponse.json(customer);
+    
+    return NextResponse.json(customer, { status: 201 });
   } catch (error: any) {
     console.error('Error creating customer:', error);
-    return NextResponse.json({ error: 'Failed to create customer', message: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create customer', message: error.message },
+      { status: 500 }
+    );
   }
 }

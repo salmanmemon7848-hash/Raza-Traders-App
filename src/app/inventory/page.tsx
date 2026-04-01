@@ -9,7 +9,8 @@ import {
   Trash2, 
   Filter,
   X,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle2
 } from 'lucide-react';
 
 interface Product {
@@ -37,6 +38,9 @@ export default function Inventory() {
     sellingPrice: '',
     quantity: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -58,17 +62,52 @@ export default function Inventory() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const method = editingProduct ? 'PUT' : 'POST';
-    const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
+    setSubmitError(null);
+    setSubmitSuccess(false);
+    setIsSubmitting(true);
+
+    // Client-side validation
+    if (!formData.name.trim() || !formData.companyName.trim()) {
+      setSubmitError('Product name and company name are required');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const purchasePrice = parseFloat(formData.purchasePrice);
+    const sellingPrice = parseFloat(formData.sellingPrice);
+    const quantity = parseInt(formData.quantity);
+
+    if (isNaN(purchasePrice) || isNaN(sellingPrice) || isNaN(quantity)) {
+      setSubmitError('Please enter valid numbers for prices and quantity');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (purchasePrice < 0 || sellingPrice < 0 || quantity < 0) {
+      setSubmitError('Prices and quantity cannot be negative');
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
+      const method = editingProduct ? 'PUT' : 'POST';
+      const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to save product');
+      }
+
+      setSubmitSuccess(true);
+      
+      setTimeout(() => {
         setIsModalOpen(false);
         setEditingProduct(null);
         setFormData({
@@ -79,10 +118,14 @@ export default function Inventory() {
           sellingPrice: '',
           quantity: '',
         });
+        setSubmitSuccess(false);
         fetchProducts();
-      }
-    } catch (err) {
+      }, 1500);
+    } catch (err: any) {
       console.error(err);
+      setSubmitError(err.message || 'Failed to save product. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -225,6 +268,21 @@ export default function Inventory() {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              {/* Error Message */}
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span>{submitError}</span>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {submitSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                  <span>Product saved successfully!</span>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="col-span-2">
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Product Name</label>
@@ -292,15 +350,24 @@ export default function Inventory() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 sm:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-2.5 sm:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm sm:text-base"
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-2.5 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {editingProduct ? 'Update Product' : 'Add Product'}
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>{editingProduct ? 'Update Product' : 'Add Product'}</>
+                  )}
                 </button>
               </div>
             </form>
