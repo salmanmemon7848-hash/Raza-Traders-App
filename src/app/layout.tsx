@@ -30,10 +30,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
       >
         <ErrorBoundary>
-          <div className="flex h-screen">
+          <div className="flex min-h-screen lg:flex-row flex-col">
             <Sidebar />
-            <main className="flex-1 ml-64 overflow-y-auto p-8">
-              <div className="max-w-7xl mx-auto">
+            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 lg:ml-0 mt-16 lg:mt-0">
+              <div className="max-w-full lg:max-w-7xl mx-auto">
                 {children}
               </div>
             </main>

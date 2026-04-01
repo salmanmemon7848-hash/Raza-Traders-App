@@ -110,11 +110,11 @@ export default function Inventory() {
   const companies = Array.from(new Set(products.map(p => p.companyName)));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Inventory Management</h2>
-          <p className="text-gray-500">Manage your products and stock levels</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Inventory Management</h2>
+          <p className="text-sm sm:text-base text-gray-500">Manage your products and stock levels</p>
         </div>
         <button
           onClick={() => {
@@ -122,7 +122,7 @@ export default function Inventory() {
             setFormData({ name: '', companyName: '', modelNumber: '', purchasePrice: '', sellingPrice: '', quantity: '' });
             setIsModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+          className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg hover:bg-indigo-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
         >
           <Plus className="w-5 h-5" />
           Add Product
@@ -135,7 +135,7 @@ export default function Inventory() {
           <input
             type="text"
             placeholder="Search by name, company, or model..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-3 sm:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -143,7 +143,7 @@ export default function Inventory() {
         <div className="relative w-full md:w-64">
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <select
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-white"
+            className="w-full pl-10 pr-4 py-3 sm:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-white text-sm sm:text-base"
             value={companyFilter}
             onChange={(e) => setCompanyFilter(e.target.value)}
           >
@@ -155,38 +155,38 @@ export default function Inventory() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[800px]">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Product Name</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Company</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Purchase Price</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Selling Price</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Profit</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Stock</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600 text-right">Actions</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap">Product Name</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap hidden sm:table-cell">Company</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap hidden md:table-cell">Purchase Price</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap hidden lg:table-cell">Selling Price</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap hidden xl:table-cell">Profit</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap">Stock</th>
+                <th className="px-4 sm:px-6 py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">Loading products...</td></tr>
+                <tr><td colSpan={7} className="px-4 sm:px-6 py-8 text-center text-gray-500 text-sm sm:text-base">Loading products...</td></tr>
               ) : products.length === 0 ? (
-                <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">No products found.</td></tr>
+                <tr><td colSpan={7} className="px-4 sm:px-6 py-8 text-center text-gray-500 text-sm sm:text-base">No products found.</td></tr>
               ) : (
                 products.map((product) => {
                   const profit = product.sellingPrice - product.purchasePrice;
                   const isLowStock = product.quantity < 5;
                   return (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{product.name}</div>
-                        {product.modelNumber && <div className="text-xs text-gray-500">{product.modelNumber}</div>}
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="font-medium text-gray-900 text-sm sm:text-base">{product.name}</div>
+                        {product.modelNumber && <div className="text-xs text-gray-500 hidden sm:block">{product.modelNumber}</div>}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{product.companyName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">₹{product.purchasePrice.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900 font-medium">₹{product.sellingPrice.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-sm text-emerald-600 font-medium">₹{profit.toLocaleString()}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 hidden sm:table-cell">{product.companyName}</td>
+                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">₹{product.purchasePrice.toLocaleString()}</td>
+                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-900 font-medium hidden lg:table-cell">₹{product.sellingPrice.toLocaleString()}</td>
+                      <td className="px-4 sm:px-6 py-4 text-sm text-emerald-600 font-medium hidden xl:table-cell">₹{profit.toLocaleString()}</td>
+                      <td className="px-4 sm:px-6 py-4">
                         <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           isLowStock ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                         }`}>
@@ -194,7 +194,7 @@ export default function Inventory() {
                           {product.quantity} units
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right space-x-2">
+                      <td className="px-4 sm:px-6 py-4 text-right space-x-2">
                         <button onClick={() => openEditModal(product)} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -213,90 +213,90 @@ export default function Inventory() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Product Name</label>
                   <input
                     required
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company Name</label>
                   <input
                     required
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Model Number</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Model Number</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.modelNumber}
                     onChange={(e) => setFormData({ ...formData, modelNumber: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
                   <input
                     required
                     type="number"
                     step="0.01"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.purchasePrice}
                     onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Selling Price</label>
                   <input
                     required
                     type="number"
                     step="0.01"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.sellingPrice}
                     onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Initial Quantity</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Initial Quantity</label>
                   <input
                     required
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm sm:text-base"
                     value={formData.quantity}
                     onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                   />
                 </div>
               </div>
-              <div className="pt-4 flex gap-3">
+              <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 sm:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="flex-1 px-4 py-2.5 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm sm:text-base"
                 >
                   {editingProduct ? 'Update Product' : 'Add Product'}
                 </button>
