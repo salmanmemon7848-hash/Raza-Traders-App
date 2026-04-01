@@ -47,10 +47,12 @@ export default function SalesHistory() {
     try {
       const res = await fetch(`/api/bills?search=${search}&fromDate=${fromDate}&toDate=${toDate}`);
       const data = await res.json();
-      setBills(data);
+      // Ensure data is an array
+      setBills(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
       console.error(err);
+      setBills([]);
       setLoading(false);
     }
   };

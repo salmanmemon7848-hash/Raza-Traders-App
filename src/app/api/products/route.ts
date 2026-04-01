@@ -23,10 +23,12 @@ export async function GET(request: Request) {
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json(products);
+    // Always return an array
+    return NextResponse.json(Array.isArray(products) ? products : []);
   } catch (error: any) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Failed to fetch products', message: error.message }, { status: 500 });
+    // Return empty array on error
+    return NextResponse.json([], { status: 200 });
   }
 }
 

@@ -60,9 +60,11 @@ export default function Billing() {
     try {
       const res = await fetch('/api/products');
       const data = await res.json();
-      setProducts(data);
+      // Ensure data is an array
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch products:', err);
+      setProducts([]);
     }
   };
 

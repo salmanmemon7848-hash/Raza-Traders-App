@@ -34,7 +34,13 @@ export default function Dashboard() {
     fetch('/api/dashboard')
       .then(res => res.json())
       .then(data => {
-        setStats(data);
+        // Validate data structure
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+          setStats(data);
+        } else {
+          console.error('Invalid dashboard data format');
+          setStats(null);
+        }
         setLoading(false);
       })
       .catch(err => {

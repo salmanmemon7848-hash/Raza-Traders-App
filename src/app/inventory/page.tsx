@@ -42,10 +42,12 @@ export default function Inventory() {
     try {
       const res = await fetch(`/api/products?search=${search}&company=${companyFilter}`);
       const data = await res.json();
-      setProducts(data);
+      // Ensure data is an array
+      setProducts(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
       console.error(err);
+      setProducts([]);
       setLoading(false);
     }
   };

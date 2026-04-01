@@ -22,15 +22,19 @@ export async function GET(request: Request) {
     });
 
     // Calculate total spent for each customer
-    const enrichedCustomers = customers.map((customer: any) => {
-      const totalSpent = customer.bills.reduce((acc: any, b: any) => acc + b.finalAmount, 0);
+    const enrichedCustomers = Array.isArray(customers) ? customers.map((customer: any) => {
+      const totalSpent = Array.isArray(customer.bills) 
+        ? customer.bills.reduce((acc: any, b: any) => acc + (b.finalAmount || 0), 0)
+        : 0;
       return { ...customer, totalSpent };
-    });
+    }) : [];
 
+    // Always return an array
     return NextResponse.json(enrichedCustomers);
   } catch (error: any) {
     console.error('Error fetching customers:', error);
-    return NextResponse.json({ error: 'Failed to fetch customers', message: error.message }, { status: 500 });
+    // Return empty array on error
+    return NextResponse.json([], { status: 200 });
   }
 }
 

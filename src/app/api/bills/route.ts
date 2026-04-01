@@ -32,10 +32,12 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(bills);
+    // Always return an array
+    return NextResponse.json(Array.isArray(bills) ? bills : []);
   } catch (error: any) {
     console.error('Error fetching bills:', error);
-    return NextResponse.json({ error: 'Failed to fetch bills', message: error.message }, { status: 500 });
+    // Return empty array on error
+    return NextResponse.json([], { status: 200 });
   }
 }
 
