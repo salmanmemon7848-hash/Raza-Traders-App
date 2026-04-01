@@ -1,0 +1,14 @@
+{
+  "buildCommand": "prisma generate && prisma db push --accept-data-loss && next build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["bom1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 60
+    }
+  },
+  "env": {
+    "DATABASE_URL": "@database-url"
+  }
+}
